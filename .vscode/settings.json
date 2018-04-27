@@ -3,5 +3,8 @@
     "*.js": "javascript",
     "*.coffee": "coffeescript",
     "iosfwd": "cpp"
-  }
+  },
+  "typelens.skiplanguages": [
+    "cpp"
+  ]
 }

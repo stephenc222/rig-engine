@@ -3,13 +3,12 @@
 ## Overview
 
 provides a straightforward wrapper around OpenGL for abstracting away OpenGL specific handling and allowing
-focus on game development itself.
+focus on game development itself. Scriptable with Lua.
 
 ## Assumptions
 
 + _The game is the **what**, and the engine is the **how**_
 + _**What** is more important than the **how**_
-+ _When in doubt, put generalized, abstract code in the engine for later reuse_
 
 ## Features
 

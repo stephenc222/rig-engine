@@ -1,8 +1,10 @@
-// starts the dummy app for testing out the engine
-#include "./app/app.h"
+#include "engine.h"
 
-
-int main (void) {
-  App app;
-  app.init();
+int main (int argc, char *argv[]) {
+  Engine engine;
+  int err = engine.init();
+  if (err) {
+    return 1;
+  } 
+  return 0;
 }
