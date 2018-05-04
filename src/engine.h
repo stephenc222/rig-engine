@@ -3,7 +3,6 @@
 #define ENGINE_H
 
 #include "./lua_script.h"
-#include <string>
 
 
 struct ConfigData {
@@ -22,7 +21,7 @@ class Engine {
     void start();
     // load resources
     int loadResources();
-    int loadConfigScript(std::string& filename);
+    int loadConfigScript(const char* filename);
     Engine();
     ~Engine();
     // reports engine errors

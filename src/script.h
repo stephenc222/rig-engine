@@ -5,7 +5,6 @@
 
 #ifndef SCRIPT_H
 #define SCRIPT_H
-#include <string>
 
 struct GameState {};
 
@@ -13,7 +12,7 @@ class Script {
   public:
     GameState *gameState;
     // used on start up
-    virtual int loadScript(std::string& filename) = 0;
+    virtual int loadScript(const char* filename) = 0;
     // used either before at the start of the render call
     virtual GameState getGameState() = 0;
 };

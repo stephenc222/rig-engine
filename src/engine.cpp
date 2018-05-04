@@ -3,7 +3,7 @@
 #include <string>
 
 // TODO: add a makefile rule to copy resources into bin
-std::string CONFIG_FILE = "resources/scripts/config.lua";
+const char* CONFIG_FILE = "resources/scripts/config.lua";
 
 enum ENGINE_STATUS {
   OK, 
@@ -22,7 +22,7 @@ int Engine::loadResources() {
   return OK;
 }
 
-int Engine::loadConfigScript(std::string& filename) {
+int Engine::loadConfigScript(const char* filename) {
   // load config script
   // sets things like window dimensions, key mappings
   // this->luaScriptAPI;
