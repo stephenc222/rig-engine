@@ -1,6 +1,9 @@
 #include <iostream>
 #include "./engine.h"
+#include <string>
 
+// TODO: add a makefile rule to copy resources into bin
+std::string CONFIG_FILE = "resources/scripts/config.lua";
 
 enum ENGINE_STATUS {
   OK, 
@@ -12,26 +15,37 @@ int Engine::loadResources() {
   // load resources
   // resources: Textures, Scripts, GameData, etc.
   std::cout << "loading resources..." << std::endl;
-  if (Engine::loadConfigScript() != OK) {
+  if (Engine::loadConfigScript(CONFIG_FILE) != OK) {
     return LOAD_CONFIG_SCRIPT_ERROR;
   }
 
   return OK;
 }
 
-int Engine::loadConfigScript() {
+int Engine::loadConfigScript(std::string& filename) {
   // load config script
   // sets things like window dimensions, key mappings
-  this->configScriptCtx = luaL_newstate();
+  // this->luaScriptAPI;
+  this->luaScriptAPI->loadConfigScript(filename);
 
   return OK;
 }
 
 Engine::~Engine() {
   // shutdown engine, close script contexts
-  lua_close(this->configScriptCtx);
+  if (this->luaScriptAPI) {
+    delete this->luaScriptAPI;
+    this->luaScriptAPI = nullptr;
+  }
 
 };
+
+Engine::Engine() {
+  // instantiate script api class, and other api classes
+  LuaScriptAPI* luaScriptAPI = new LuaScriptAPI;
+  this->luaScriptAPI = luaScriptAPI;
+
+}
 
 int Engine::init() {
   // load files here

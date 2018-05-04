@@ -1,6 +1,10 @@
-#include "lua/lua.h"
-#include "lua/lauxlib.h"
-#include "lua/lualib.h"
+// some_header_file.h
+#ifndef ENGINE_H
+#define ENGINE_H
+
+#include "./lua_script.h"
+#include <string>
+
 
 struct ConfigData {
   int screenWidth;
@@ -11,16 +15,18 @@ struct ConfigData {
 class Engine {
   private:
     ConfigData configData;
-    lua_State* configScriptCtx;
+    LuaScriptAPI* luaScriptAPI;
   public:
     int init();
     // start engine
     void start();
     // load resources
     int loadResources();
-    int loadConfigScript();
-    // Engine();
+    int loadConfigScript(std::string& filename);
+    Engine();
     ~Engine();
     // reports engine errors
     void engineError(int engineError);
 };
+
+#endif
