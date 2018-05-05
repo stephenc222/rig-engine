@@ -3,7 +3,7 @@
 #include <string>
 
 // TODO: add a makefile rule to copy resources into bin
-const char* CONFIG_FILE = "resources/scripts/config.lua";
+const char* CONFIG_FILE = "./scripts/config.lua";
 
 enum ENGINE_STATUS {
   OK, 
@@ -27,9 +27,28 @@ int Engine::loadConfigScript(const char* filename) {
   // sets things like window dimensions, key mappings
   // this->luaScriptAPI;
   this->luaScriptAPI->loadConfigScript(filename);
-
-  return OK;
+  // this->configData = this->luaScriptAPI->configScriptData;
+  this->setConfigData(this->luaScriptAPI->configScriptData);
+  return OK; 
 }
+
+ConfigData& Engine::getConfigData() {
+  return this->configData;
+};
+
+void Engine::setConfigData(ConfigScriptData& configScriptData) {
+  if (configScriptData.width != 0) {
+    this->configData.screenWidth = configScriptData.width;
+  }
+  if (configScriptData.height != 0) {
+    this->configData.screenHeight = configScriptData.height;
+  }
+  if (configScriptData.useFullScreen != 0) {
+    this->configData.useFullScreen = configScriptData.useFullScreen;
+  } else {
+    this->configData.useFullScreen = 0;
+  }
+};
 
 Engine::~Engine() {
   // shutdown engine, close script contexts
@@ -42,8 +61,9 @@ Engine::~Engine() {
 
 Engine::Engine() {
   // instantiate script api class, and other api classes
-  LuaScriptAPI* luaScriptAPI = new LuaScriptAPI;
-  this->luaScriptAPI = luaScriptAPI;
+  ConfigData configData;
+  this->configData = configData;
+  this->luaScriptAPI = new LuaScriptAPI;
 
 }
 

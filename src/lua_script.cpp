@@ -1,5 +1,6 @@
 #include "lua_script.h"
 #include <iostream>
+#include <stdexcept>
 
 int LuaScriptAPI::loadScript(const char* filename) {
   // pass the file name of the script
@@ -28,14 +29,34 @@ int LuaScriptAPI::loadConfigScript(const char* filename) {
     return 1;
   }
 
-  // TODO: WIP handling lua variables
-  const char* widthVar = "WIDTH";
-  const char* heightVar = "HEIGHT";
-  int w = this->getInt(widthVar);
-  int h = this->getInt(heightVar);
-  std::cout << "W: " << w << " H: " << h << std::endl;
+  // "config" is the name of a global lua table in config.lua
+  lua_getglobal(this->configScriptCtx, "config");
+  // stack: [config]
+  int width = this->getFieldInt("WIDTH");
+  int height = this->getFieldInt("HEIGHT");
+  int useFullScreen = this->getFieldInt("USE_FULL_SCREEN");
+  lua_pop(this->configScriptCtx, 1);
+  // stack: []
+
+  this->setConfigScriptData(width, height, useFullScreen);
 
   return 0;
+}
+
+int LuaScriptAPI::getFieldInt(const char* fieldName) {
+  if (!lua_istable(this->configScriptCtx, -1)) {
+    throw std::runtime_error("stack top is not a table");
+  }
+  lua_getfield(this->configScriptCtx, -1, fieldName);
+  // stack: [table, fieldName]
+  if (!lua_isnumber(this->configScriptCtx, -1)) {
+    // TODO: decide if a default would be better here
+    throw std::runtime_error("Config fieldName is not a number");
+  }
+  int fieldValue = (int)lua_tointegerx(this->configScriptCtx, -1, 0);
+
+  lua_pop(this->configScriptCtx, 1);
+  return fieldValue;
 }
 
 GameState LuaScriptAPI::getGameState() {
@@ -43,7 +64,17 @@ GameState LuaScriptAPI::getGameState() {
   // get gameState from lua context
 
   return this->gameState;
+};
+
+void LuaScriptAPI::setConfigScriptData(int width, int height, int useFullScreen) {
+  this->configScriptData.width = width;
+  this->configScriptData.height = height;
+  this->configScriptData.useFullScreen = useFullScreen;
 }
+
+ConfigScriptData& LuaScriptAPI::getConfigScriptData() {
+  return this->configScriptData;
+};
 
 LuaScriptAPI::~LuaScriptAPI() {
   // close script contexts
@@ -51,7 +82,6 @@ LuaScriptAPI::~LuaScriptAPI() {
     lua_close(this->configScriptCtx);
     this->configScriptCtx = nullptr;
   }
-  
 }
 
 LuaScriptAPI::LuaScriptAPI() { 

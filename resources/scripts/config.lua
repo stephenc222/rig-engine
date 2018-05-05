@@ -8,5 +8,8 @@
 --   HEIGHT = 480
 -- }
 
-WIDTH = 640
-HEIGHT = 480
+config = {
+  WIDTH = 640,
+  HEIGHT = 480,
+  USE_FULL_SCREEN = 1
+}

@@ -6,14 +6,24 @@
 #include "lua/lualib.h"
 #include "script.h"
 
+struct ConfigScriptData {
+  int width;
+  int height;
+  int useFullScreen;
+};
+
 
 class LuaScriptAPI: public Script {
   public:
     GameState gameState;
     lua_State* configScriptCtx;
+    ConfigScriptData configScriptData;
     int loadScript(const char* filename);
     int loadConfigScript(const char* filename);
+    void setConfigScriptData(int width, int height, int useFullScreen);
+    ConfigScriptData& getConfigScriptData();
     int getInt(const char* varName);
+    int getFieldInt(const char* varName);
     GameState getGameState();
     ~LuaScriptAPI();
     LuaScriptAPI();

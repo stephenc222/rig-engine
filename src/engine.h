@@ -19,8 +19,10 @@ class Engine {
     int init();
     // start engine
     void start();
-    // load resources
+    // load resources 
     int loadResources();
+    void setConfigData(ConfigScriptData& configScriptData);
+    ConfigData& getConfigData();
     int loadConfigScript(const char* filename);
     Engine();
     ~Engine();
