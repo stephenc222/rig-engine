@@ -2,7 +2,6 @@
 #include "./engine.h"
 #include <string>
 
-// TODO: add a makefile rule to copy resources into bin
 const char* CONFIG_FILE = "./scripts/config.lua";
 
 enum ENGINE_STATUS {
