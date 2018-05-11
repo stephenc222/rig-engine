@@ -5,8 +5,8 @@ BUILD_DIR ?= ./build
 SOURCE_DIRS ?= ./src
 RESOURCES_DIR ?= ./resources
 
-LIBRARY_COMPILER_FLAGS ?= $(shell pkg-config glew glfw3 --cflags)
-LIBRARY_LINKER_FLAGS ?= $(shell pkg-config glew glfw3 --libs) -framework OpenGL
+LIBRARY_COMPILER_FLAGS ?= $(shell pkg-config glew glfw3 sdl2 sdl2_ttf sdl2_image --cflags)
+LIBRARY_LINKER_FLAGS ?= $(shell pkg-config glew glfw3 sdl2 sdl2_ttf sdl2_image --libs) -framework OpenGL
 
 # production
 # PREPROC_DEFINES ?= -DNDEBUG
