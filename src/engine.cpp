@@ -55,6 +55,14 @@ Engine::~Engine() {
     delete this->luaScriptAPI;
     this->luaScriptAPI = nullptr;
   }
+  if (this->inputManager) {
+    delete this->inputManager;
+    this->inputManager = nullptr;
+  }
+  if (this->renderer) {
+    delete this->renderer;
+    this->renderer = nullptr;
+  }
 
 };
 
@@ -63,6 +71,9 @@ Engine::Engine() {
   ConfigData configData;
   this->configData = configData;
   this->luaScriptAPI = new LuaScriptAPI;
+  this->renderer = new Renderer;
+  this->inputManager = new InputManager;
+  this->isLooping = 1;
 
 }
 
@@ -77,9 +88,30 @@ int Engine::init() {
   return 0;
 }
 
+void Engine::update(float dt) {
+  // TODO:
+}
+
 void Engine::start() {
   // starts the game loop
   std::cout << "start Engine \n";  
+  this->renderer->init(this->configData.screenWidth, this->configData.screenHeight);
+  float dt = 0;
+  double currentTime, lastTime = 0;
+  while(this->isLooping) {
+    this->inputManager->handleInput(this->isLooping);
+    // currentTime = SDL_GetTicks();
+    currentTime = this->renderer->getTime();
+    if ((currentTime - lastTime) < 1000) {
+      dt = (currentTime - lastTime);
+      this->update(dt);
+    }
+    lastTime = currentTime;
+    // get data from scripting game state that's required for rendering
+    this->renderer->render();
+  }
+  this->renderer->cleanUp();
+  // cleanUp(this->renderer);
 }
 
 void Engine::engineError(int engineError) {
