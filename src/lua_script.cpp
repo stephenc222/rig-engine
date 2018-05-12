@@ -4,7 +4,34 @@
 
 int LuaScriptAPI::loadScript(const char* filename) {
   // pass the file name of the script
+  std::cout << "lua game script name: " << filename << std::endl;
+  if (luaL_loadfile(this->gameScriptCtx, filename) || lua_pcall(this->gameScriptCtx, 0, 0, 0)) {
+    // error(L, "cannot run config. file: %s", lua_tostring(L, -1));
+    std::cerr << "ERROR: can't open game script file: " << filename << std::endl;
+    return 1;
+  }
+
+  // initial successful attempt at calling lua global functions from C++
+  this->callGlobalFunc("update");
+  this->callGlobalFunc("render");
   return 0;
+}
+
+void LuaScriptAPI::callGlobalFunc(const char* funcName) {
+  // TODO: maybe FIXME: assumes the game script lua stack is empty
+  // stack: []
+  lua_getglobal(this->gameScriptCtx, funcName);
+  // stack: [funcName]
+  /* do the call (0 arguments, 1 result) */
+  if (lua_isfunction(this->gameScriptCtx, -1)) {
+    lua_pcall(this->gameScriptCtx, 0, 1, 0);
+    std::cout << "CALLED FUNC: " << std::string(lua_tostring(this->gameScriptCtx, -1)) << std::endl;
+    lua_pop(this->gameScriptCtx, 1);
+    // stack: [..]
+  } else {
+    lua_pop(this->gameScriptCtx, 1);
+    // stack: [..]
+  }
 }
 
 int LuaScriptAPI::getInt(const char* varName) {
@@ -82,8 +109,13 @@ LuaScriptAPI::~LuaScriptAPI() {
     lua_close(this->configScriptCtx);
     this->configScriptCtx = nullptr;
   }
+  if (this->gameScriptCtx) {
+    lua_close(this->gameScriptCtx);
+    this->gameScriptCtx = nullptr;
+  }
 }
 
 LuaScriptAPI::LuaScriptAPI() { 
   this->configScriptCtx = luaL_newstate();
+  this->gameScriptCtx = luaL_newstate();
 }

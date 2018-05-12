@@ -2,12 +2,15 @@
 #include "./engine.h"
 #include <string>
 
+// TODO: replace this with a dynamic string getter
 const char* CONFIG_FILE = "./scripts/config.lua";
+const char* GAME_FILE = "./scripts/game.lua";
 
 enum ENGINE_STATUS {
   OK, 
   LOAD_TEXTURE_ERROR, 
-  LOAD_CONFIG_SCRIPT_ERROR
+  LOAD_CONFIG_SCRIPT_ERROR,
+  LOAD_SCRIPT_ERROR
 };
 
 int Engine::loadResources() {
@@ -16,6 +19,9 @@ int Engine::loadResources() {
   std::cout << "loading resources..." << std::endl;
   if (Engine::loadConfigScript(CONFIG_FILE) != OK) {
     return LOAD_CONFIG_SCRIPT_ERROR;
+  }
+  if (Engine::loadScript(GAME_FILE) != OK) {
+    return LOAD_SCRIPT_ERROR;
   }
 
   return OK;
@@ -29,6 +35,20 @@ int Engine::loadConfigScript(const char* filename) {
   // this->configData = this->luaScriptAPI->configScriptData;
   this->setConfigData(this->luaScriptAPI->configScriptData);
   return OK; 
+}
+
+void Engine::setGameScriptFunctions(GameScriptFuncData& gameScriptFuncData) {
+  // set the main game script functions of "update" and "render" to the Engine
+}
+
+int Engine::loadScript(const char* filename) {
+  // load config script
+  // sets things like window dimensions, key mappings
+  // this->luaScriptAPI;
+  this->luaScriptAPI->loadScript(filename);
+  // this->configData = this->luaScriptAPI->configScriptData;
+  this->setGameScriptFunctions(this->luaScriptAPI->gameFuncData);
+  return OK;
 }
 
 ConfigData& Engine::getConfigData() {

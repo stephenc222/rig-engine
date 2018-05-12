@@ -13,9 +13,12 @@ struct ConfigData {
   int useFullScreen;
 };
 
+struct GameFuncs {};
+
 class Engine {
   private:
     ConfigData configData;
+    GameFuncs gameFuncs;
     LuaScriptAPI* luaScriptAPI;
     Renderer* renderer;
     InputManager* inputManager;
@@ -28,8 +31,10 @@ class Engine {
     int loadResources();
     // handle input
     void setConfigData(ConfigScriptData& configScriptData);
+    void setGameScriptFunctions(GameScriptFuncData& gameScriptFuncData);
     ConfigData& getConfigData();
     int loadConfigScript(const char* filename);
+    int loadScript(const char* filename);
     Engine();
     ~Engine();
     // reports engine errors
