@@ -80,7 +80,9 @@ Engine::~Engine() {
     this->inputManager = nullptr;
   }
   if (this->renderer) {
-    delete this->renderer;
+    #ifdef SDL
+      delete this->renderer;
+    #endif
     this->renderer = nullptr;
   }
 
@@ -91,7 +93,10 @@ Engine::Engine() {
   ConfigData configData;
   this->configData = configData;
   this->luaScriptAPI = new LuaScriptAPI;
-  this->renderer = new Renderer;
+  // only one renderer kind per build
+  #ifdef SDL
+    this->renderer = new SDLRenderer;
+  #endif
   this->inputManager = new InputManager;
   this->isLooping = 1;
 
@@ -109,7 +114,14 @@ int Engine::init() {
 }
 
 void Engine::update(float dt) {
-  // TODO:
+  // TODO: handle game update logic through script function here
+  this->luaScriptAPI->callGlobalFunc("update");
+}
+
+void Engine::render() {
+  // TODO: pass render data to renderer from script's relevant render data
+  this->luaScriptAPI->callGlobalFunc("render");
+  this->renderer->render();
 }
 
 void Engine::start() {
@@ -128,7 +140,7 @@ void Engine::start() {
     }
     lastTime = currentTime;
     // get data from scripting game state that's required for rendering
-    this->renderer->render();
+    this->render();
   }
   this->renderer->cleanUp();
   // cleanUp(this->renderer);

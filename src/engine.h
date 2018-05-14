@@ -4,8 +4,7 @@
 
 #include "./lua_script.h"
 #include "./input_manager.h"
-#include "./renderer.h"
-
+#include "sdl_renderer.h"
 
 struct ConfigData {
   int screenWidth;
@@ -40,6 +39,7 @@ class Engine {
     // reports engine errors
     void engineError(int engineError);
     void update(float dt);
+    void render();
     // void cleanUp
 };
 

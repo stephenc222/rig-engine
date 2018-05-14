@@ -1,6 +1,6 @@
-#include "./renderer.h"
+#include "./sdl_renderer.h"
 
-void Renderer::render() {
+void SDLRenderer::render() {
   // render stuff
   SDL_RenderClear(this->sdlRendererPtr);
 
@@ -9,12 +9,12 @@ void Renderer::render() {
   SDL_RenderPresent(this->sdlRendererPtr);
 }
 
-double Renderer::getTime() {
+double SDLRenderer::getTime() {
   return SDL_GetTicks();
 }
 
-int Renderer::init(int SCREEN_WIDTH, int SCREEN_HEIGHT) {
-  printf("init Renderer!\n");
+int SDLRenderer::init(int SCREEN_WIDTH, int SCREEN_HEIGHT) {
+  printf("init SDLRenderer!\n");
 
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
     printf("SDL_INIT Error: %s \n", SDL_GetError());
@@ -67,9 +67,11 @@ int Renderer::init(int SCREEN_WIDTH, int SCREEN_HEIGHT) {
   return 0;
 }
 
-void Renderer::cleanUp() {
+void SDLRenderer::cleanUp() {
   SDL_DestroyRenderer(this->sdlRendererPtr);
   SDL_DestroyWindow(this->sdlWindowPtr);
   IMG_Quit();
   SDL_Quit();
 }
+
+SDLRenderer::~SDLRenderer() {};

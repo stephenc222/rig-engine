@@ -11,7 +11,7 @@ LIBRARY_LINKER_FLAGS ?= $(shell pkg-config glew glfw3 sdl2 sdl2_ttf sdl2_image -
 # production
 # PREPROC_DEFINES ?= -DNDEBUG
 # dev
-PREPROC_DEFINES ?= -DDEBUG
+PREPROC_DEFINES ?= -DDEBUG -DSDL
 
 COPY_RESOURCES ?= rsync -rvui --progress
 MKDIR_P ?= mkdir -p
