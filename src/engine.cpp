@@ -1,6 +1,7 @@
 #include <iostream>
 #include "./engine.h"
 #include <string>
+Engine* Engine::instance = nullptr;
 
 // TODO: replace this with a dynamic string getter
 const char* CONFIG_FILE = "./scripts/config.lua";
@@ -91,6 +92,7 @@ Engine::~Engine() {
 Engine::Engine() {
   // instantiate script api class, and other api classes
   ConfigData configData;
+  Engine::instance = this;
   this->configData = configData;
   this->luaScriptAPI = new LuaScriptAPI;
   // only one renderer kind per build
@@ -113,6 +115,13 @@ int Engine::init() {
   return 0;
 }
 
+void Engine::handleInput(int *isLooping) {
+  // handleInput will set isLooping to 0, killing the game loop if the quit button is pressed
+  // TODO: enable game to have "cleanup" or "abrupt exit handling" if isLooping is 0
+  this->inputManager->handleInput(*isLooping);
+
+}
+
 void Engine::update(float dt) {
   // TODO: handle game update logic through script function here
   this->luaScriptAPI->callGlobalFunc("update");
@@ -131,7 +140,7 @@ void Engine::start() {
   float dt = 0;
   double currentTime, lastTime = 0;
   while(this->isLooping) {
-    this->inputManager->handleInput(this->isLooping);
+    this->handleInput(&this->isLooping);
     // currentTime = SDL_GetTicks();
     currentTime = this->renderer->getTime();
     if ((currentTime - lastTime) < 1000) {

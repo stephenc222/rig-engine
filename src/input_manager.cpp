@@ -1,4 +1,5 @@
 #include "./input_manager.h"
+#include <iostream>
 
 void InputManager::handleInput(int& isLooping) {
   SDL_Event event;
@@ -9,4 +10,12 @@ void InputManager::handleInput(int& isLooping) {
       }
     }
   }
+}
+
+std::map<int, bool> InputManager::getButtonState() {
+  // TODO: WIP, connect to VirtualController collection
+  std::map<int, bool> dummyButtonState;
+  dummyButtonState[0] = 26;
+  std::cout << "input manager method called NOW" << std::endl;
+  return dummyButtonState;
 }

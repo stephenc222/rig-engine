@@ -4,7 +4,10 @@
 
 
 
-loop = true
+-- loop = true
+api:hello()
+api:getButtonState()
+api:addOne()
 
 -- testing out Lua function calls from C++
 function update () 

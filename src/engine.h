@@ -15,14 +15,14 @@ struct ConfigData {
 struct GameFuncs {};
 
 class Engine {
-  private:
+  public:
     ConfigData configData;
     GameFuncs gameFuncs;
     LuaScriptAPI* luaScriptAPI;
     Renderer* renderer;
     InputManager* inputManager;
+    static Engine* instance;
     int isLooping;
-  public:
     int init();
     // start engine
     void start();
@@ -37,6 +37,7 @@ class Engine {
     Engine();
     ~Engine();
     // reports engine errors
+    void handleInput(int *isLooping);
     void engineError(int engineError);
     void update(float dt);
     void render();

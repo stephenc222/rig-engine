@@ -1,7 +1,25 @@
 #include "lua_script.h"
 #include <iostream>
 #include <stdexcept>
+#include "engine.h"
 
+int LuaScriptAPI::hello(lua_State* L) {
+  std::cout << "HELLO FROM C++" << std::endl;
+  return 0;
+}
+
+int LuaScriptAPI::getButtonState(lua_State* L) {
+  std::map<int, bool> dummyButtonState = Engine::instance->inputManager->getButtonState();
+  std::cout << "getButtonState FROM C++" << std::endl;
+  // TODO: parse to lua stack friendly
+  return 0;
+}
+int LuaScriptAPI::addOne(lua_State* L) {
+  std::cout << "DO SOME ADDING!" << std::endl;
+  return 1;
+}
+
+// C_API LuaScriptAPI::c_API;
 int LuaScriptAPI::loadScript(const char* filename) {
   // pass the file name of the script
   std::cout << "lua game script name: " << filename << std::endl;
@@ -10,6 +28,8 @@ int LuaScriptAPI::loadScript(const char* filename) {
     std::cerr << "ERROR: can't open game script file: " << filename << std::endl;
     return 1;
   }
+  luaL_openlibs(this->gameScriptCtx);
+  
 
   // initial successful attempt at calling lua global functions from C++
   this->callGlobalFunc("update");
@@ -25,7 +45,7 @@ void LuaScriptAPI::callGlobalFunc(const char* funcName) {
   /* do the call (0 arguments, 1 result) */
   if (lua_isfunction(this->gameScriptCtx, -1)) {
     lua_pcall(this->gameScriptCtx, 0, 1, 0);
-    std::cout << "CALLED FUNC: " << std::string(lua_tostring(this->gameScriptCtx, -1)) << std::endl;
+    // std::cout << "CALLED FUNC: " << std::string(lua_tostring(this->gameScriptCtx, -1)) << std::endl;
     lua_pop(this->gameScriptCtx, 1);
     // stack: [..]
   } else {
@@ -118,4 +138,15 @@ LuaScriptAPI::~LuaScriptAPI() {
 LuaScriptAPI::LuaScriptAPI() { 
   this->configScriptCtx = luaL_newstate();
   this->gameScriptCtx = luaL_newstate();
+  // luaL_openlibs(this->gameScriptCtx);
+  // library to be registered
+  static const struct luaL_Reg api[] = {
+    { "hello", LuaScriptAPI::hello },
+    { "getButtonState", LuaScriptAPI::getButtonState },
+    { "addOne", LuaScriptAPI::addOne },
+    { nullptr, nullptr }
+  };
+
+  luaL_newlib(this->gameScriptCtx, api);
+  lua_setglobal(this->gameScriptCtx, "api");
 }

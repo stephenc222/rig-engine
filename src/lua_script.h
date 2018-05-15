@@ -12,6 +12,7 @@ struct ConfigScriptData {
   int useFullScreen;
 };
 
+
 // this is where game scripting functions like "update" and "render"
 // are stored. The "render" func here ultimately just gets the data the engine Renderer needs
 struct GameScriptFuncData {};
@@ -23,6 +24,9 @@ class LuaScriptAPI: public Script {
     lua_State* gameScriptCtx;
     ConfigScriptData configScriptData;
     GameScriptFuncData gameFuncData;
+    static int hello(lua_State* L);
+    static int getButtonState(lua_State* L);
+    static int addOne(lua_State* L);
     int loadScript(const char* filename);
     int loadConfigScript(const char* filename);
     void setConfigScriptData(int width, int height, int useFullScreen);
