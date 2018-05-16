@@ -3,19 +3,33 @@
 #include <SDL2/SDL_ttf.h>
 #include <map>
 
+// assumes one per player
 struct VirtualController {
-  void setButtonState(int buttonId, bool isPressed);
+  void setButtonState(int buttonId, int isPressed);
   void setStickState(int stickId, float horizontal, float vertical);
-  std::map<int, bool> mButtonState;
+  std::map<int, int> mButtonState;
   std::map<int, std::pair<float, float> > mStickState;
+};
+
+// data structure for handling mouse pointer event data
+// assumes one player for now.
+struct VirtualPointer {
+  void setPointerDown(int isDown);
+  void setPointerXY(float X, float Y);
+  std::pair<float, float> pointerXY;
+  int pointerDown;
 };
 
 // TODO: abstract later
 class InputManager {
   public:
-    int dummyValue;
     std::map<int, VirtualController*> mControllers;
+    VirtualPointer virtualPointer;
     void handleInput(int &isLooping);
-    std::map<int, bool> getButtonState();
-    // TODO: WIP trying out static pointer from Engine
+    int getButtonState(int controllerId, int buttonId);
+    std::pair<float, float> getStickState(int controllerId, int stickId);
+    int getPointerDown();
+    std::pair<float, float> getPointerXY();
+    InputManager();
+    ~InputManager();
 };

@@ -9,7 +9,10 @@ int LuaScriptAPI::hello(lua_State* L) {
 }
 
 int LuaScriptAPI::getButtonState(lua_State* L) {
-  std::map<int, bool> dummyButtonState = Engine::instance->inputManager->getButtonState();
+  // TODO: get these Id's from the lua script
+  int controllerId = 0;
+  int buttonId = 0;
+  // std::map<int, bool> dummyButtonState = Engine::instance->inputManager->getButtonState(controllerId, buttonId);
   std::cout << "getButtonState FROM C++" << std::endl;
   // TODO: parse to lua stack friendly
   return 0;
