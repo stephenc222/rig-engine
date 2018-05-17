@@ -3,7 +3,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <map>
 
-// assumes one per player
+// assumes one per player, and just one player for now
 struct VirtualController {
   void setButtonState(int buttonId, int isPressed);
   void setStickState(int stickId, float horizontal, float vertical);
@@ -26,6 +26,8 @@ class InputManager {
     std::map<int, VirtualController*> mControllers;
     VirtualPointer virtualPointer;
     void handleInput(int &isLooping);
+    void handleWhichKey(SDL_Keysym *keySym, int isDown );
+    void handleWhichControllerButton(int buttonId, int isPressed );
     int getButtonState(int controllerId, int buttonId);
     std::pair<float, float> getStickState(int controllerId, int stickId);
     int getPointerDown();

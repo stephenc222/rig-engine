@@ -7,6 +7,7 @@ class SDLRenderer: public Renderer {
   public:
     SDL_Renderer* sdlRendererPtr;
     SDL_Window* sdlWindowPtr;
+    SDL_Joystick* sdlJoystick;
     void render();
     double getTime();
     int init(int SCREEN_WIDTH, int SCREEN_HEIGHT);

@@ -22,7 +22,6 @@ int LuaScriptAPI::addOne(lua_State* L) {
   return 1;
 }
 
-// C_API LuaScriptAPI::c_API;
 int LuaScriptAPI::loadScript(const char* filename) {
   // pass the file name of the script
   std::cout << "lua game script name: " << filename << std::endl;

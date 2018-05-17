@@ -26,7 +26,24 @@ int SDLRenderer::init(int SCREEN_WIDTH, int SCREEN_HEIGHT) {
     printf("TTF_Init: %s\n", TTF_GetError());
     return 1;
   }
-  
+  //Check for joysticks
+  if( SDL_NumJoysticks() < 1 )
+  {
+    printf( "Warning: No joysticks connected!\n" );
+    return 1;
+  }
+  else
+  {
+    //Load joystick
+    SDL_JoystickEventState(SDL_ENABLE);
+    this->sdlJoystick = SDL_JoystickOpen(0);
+    if( this->sdlJoystick == NULL )
+    {
+      printf( "Warning: Unable to open game controller! SDL Error: %s\n", SDL_GetError() );
+      return 1;
+    }
+  }
+
   this->sdlWindowPtr = SDL_CreateWindow(
     "Rig Engine Demo", 
     SDL_WINDOWPOS_CENTERED,
@@ -68,6 +85,9 @@ int SDLRenderer::init(int SCREEN_WIDTH, int SCREEN_HEIGHT) {
 }
 
 void SDLRenderer::cleanUp() {
+  if (this->sdlJoystick) {
+    SDL_JoystickClose(this->sdlJoystick);
+  }
   SDL_DestroyRenderer(this->sdlRendererPtr);
   SDL_DestroyWindow(this->sdlWindowPtr);
   IMG_Quit();
