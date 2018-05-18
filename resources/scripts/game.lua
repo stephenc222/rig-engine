@@ -2,16 +2,15 @@
 
 -- DEMO GAME: Breakout
 
-
-
--- loop = true
-api:hello()
-api:getButtonState()
-api:addOne()
-
 -- testing out Lua function calls from C++
 function update () 
   -- update stuff
+  -- TODO: WIP testing out getting button state
+  isDown = api:getButtonState(SDL_SCANCODE_A)
+  -- print("isDown:", isDown)
+  if isDown == 1 then
+    print('it is down!') 
+  end
   return "update Func From Lua!"
 end
 

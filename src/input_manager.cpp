@@ -22,7 +22,6 @@ void InputManager::handleWhichControllerButton(int buttonId, int isPressed) {
     PS Button       == 12
     Touhpad Press   == 13
   */
-  std::cout << "buttonId: " << buttonId << " isPressed: " << isPressed << std::endl;
   this->mControllers[0]->setButtonState(buttonId, isPressed);
 }
 
@@ -32,15 +31,19 @@ void InputManager::handleWhichKey(SDL_Keysym *keySym, int isDown ) {
     NOTE: controller buttons and keyboard keys down and up events are handled the same way
     via buttonState
     
+    Typically:
+
     W == UP
     A == LEFT
     S == DOWN
     D == RIGHT
+
+    but this is going to be relegated to the game specific logic layer
   */
 
   switch (keySym->scancode) {
     case SDL_SCANCODE_A: {
-      this->mControllers[0]->setButtonState(SDL_SCANCODE_LEFT, isDown);
+      this->mControllers[0]->setButtonState(SDL_SCANCODE_A, isDown);
       break;
     }
     case SDL_SCANCODE_LEFT: {
@@ -48,15 +51,15 @@ void InputManager::handleWhichKey(SDL_Keysym *keySym, int isDown ) {
       break;
     }
     case SDL_SCANCODE_D: {
-      this->mControllers[0]->setButtonState(SDL_SCANCODE_RIGHT, isDown);
+      this->mControllers[0]->setButtonState(SDL_SCANCODE_D, isDown);
       break;
     }
     case SDL_SCANCODE_RIGHT: {
       this->mControllers[0]->setButtonState(SDL_SCANCODE_RIGHT, isDown);
       break;
     }
-    case SDL_SCANCODE_W: {
-      this->mControllers[0]->setButtonState(SDL_SCANCODE_UP, isDown);
+    case SDL_SCANCODE_W: { 
+      this->mControllers[0]->setButtonState(SDL_SCANCODE_W, isDown);
       break;
     }
     case SDL_SCANCODE_UP: {
@@ -64,7 +67,7 @@ void InputManager::handleWhichKey(SDL_Keysym *keySym, int isDown ) {
       break;
     }
     case SDL_SCANCODE_S: {
-      this->mControllers[0]->setButtonState(SDL_SCANCODE_DOWN, isDown);
+      this->mControllers[0]->setButtonState(SDL_SCANCODE_S, isDown);
       break;
     }
     case SDL_SCANCODE_DOWN: {
@@ -132,16 +135,24 @@ void InputManager::handleInput(int& isLooping) {
       }
       case SDL_JOYBUTTONDOWN: {
         // SDL_Log("Joystick %d button %d down\n", event.jbutton.which, event.jbutton.button);
+        // TODO: find a better way to reuse the VirtualController data structure 
+        // while separating buttons from keys than just adding 500?
         int isPressed = 1;
-        this->handleWhichControllerButton(static_cast<int>(event.jbutton.button), isPressed);
-
+        this->handleWhichControllerButton(static_cast<int>(event.jbutton.button + 500), isPressed);
         break;
       }
       case SDL_JOYBUTTONUP: {
         // SDL_Log("Joystick %d button %d up\n", event.jbutton.which, event.jbutton.button);
         int isPressed = 0;
-        this->handleWhichControllerButton(static_cast<int>(event.jbutton.button), isPressed);
-
+        this->handleWhichControllerButton(static_cast<int>(event.jbutton.button + 500), isPressed);
+        break;
+      }
+      case SDL_JOYDEVICEADDED: {
+        std::cout << "joy stick connected!" << std::endl;
+        break;
+      }
+      case SDL_JOYDEVICEREMOVED: {
+        std::cout << "joy stick disconnected!" << std::endl;
         break;
       }
       default: {
@@ -157,6 +168,7 @@ void VirtualController::setButtonState(int buttonId, int isPressed ) {
 
 int InputManager::getButtonState(int controllerId, int buttonId) {
   // TODO: add exception handling here in case controllerIds or buttonIds don't exist
+  std::cout << "calling getButtonState! buttonId:" << buttonId << std::endl;
   return this->mControllers[controllerId]->mButtonState[buttonId];
 }
 

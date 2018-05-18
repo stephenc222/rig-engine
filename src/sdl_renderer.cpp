@@ -26,11 +26,13 @@ int SDLRenderer::init(int SCREEN_WIDTH, int SCREEN_HEIGHT) {
     printf("TTF_Init: %s\n", TTF_GetError());
     return 1;
   }
-  //Check for joysticks
+  // TODO: maybe FIXME: for now, if no joystick (PS4 typically) is connected, assume just keyboard
+  // maybe add a preprocessor directive here
+  // Check for joysticks
   if( SDL_NumJoysticks() < 1 )
   {
     printf( "Warning: No joysticks connected!\n" );
-    return 1;
+    this->sdlJoystick = nullptr;
   }
   else
   {

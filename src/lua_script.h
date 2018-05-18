@@ -24,12 +24,15 @@ class LuaScriptAPI: public Script {
     lua_State* gameScriptCtx;
     ConfigScriptData configScriptData;
     GameScriptFuncData gameFuncData;
-    static int hello(lua_State* L);
+    // static functions called from Lua
     static int getButtonState(lua_State* L);
-    static int addOne(lua_State* L);
+    static int getStickState(lua_State* L);
+    static int getPointerDown(lua_State* L);
+    static int getPointerXY(lua_State* L);
     int loadScript(const char* filename);
     int loadConfigScript(const char* filename);
     void setConfigScriptData(int width, int height, int useFullScreen);
+    void setScriptGlobals(lua_State* L);
     void setGameScriptFunctions(void *updateFunc, void *renderFunc);
     ConfigScriptData& getConfigScriptData();
     int getInt(const char* varName);

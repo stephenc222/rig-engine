@@ -3,35 +3,143 @@
 #include <stdexcept>
 #include "engine.h"
 
-int LuaScriptAPI::hello(lua_State* L) {
-  std::cout << "HELLO FROM C++" << std::endl;
-  return 0;
-}
+// NOTE: PS4 constants are hardcoded and possibly non-standard for SDL
+static const char* scancodeGlobals[] = {
+  "PS4_SQUARE",
+  "PS4_X",
+  "PS4_CIRCLE",
+  "PS4_TRIANGLE",
+  "PS4_LEFT_BUMPER",
+  "PS4_RIGHT_BUMPER",
+  "PS4_LEFT_TRIGGER",
+  "PS4_RIGHT_TRIGGER",
+  "PS4_SHARE_BUTTON",
+  "PS4_OPTION_BUTTON",
+  "PS4_LEFT_STICK_BUTTON",
+  "PS4_RIGHT_STICK_BUTTON",
+  "PS4_LOGO_BUTTON",
+  "PS4_TOUCHPAD_BUTTON",
+  // standard scan codes from here
+  "SDL_SCANCODE_A",
+  "SDL_SCANCODE_LEFT",
+  "SDL_SCANCODE_D",
+  "SDL_SCANCODE_RIGHT",
+  "SDL_SCANCODE_W",
+  "SDL_SCANCODE_UP",
+  "SDL_SCANCODE_S",
+  "SDL_SCANCODE_DOWN",
+  "SDL_SCANCODE_RETURN",
+  "SDL_QUIT",
+  "SDL_KEYDOWN",
+  "SDL_KEYUP",
+  "SDL_MOUSEBUTTONDOWN",
+  "SDL_MOUSEBUTTONUP",
+  "SDL_MOUSEMOTION",
+  "SDL_CONTROLLERBUTTONDOWN",
+  "SDL_CONTROLLERBUTTONUP",
+  "SDL_CONTROLLERAXISMOTION",
+  "SDL_JOYAXISMOTION",
+  "SDL_JOYBUTTONDOWN",
+  "SDL_JOYBUTTONUP",
+};
 
+// TODO: hardcoded + 500 to the default values of PS4 button indices
+// @see InputManager::handleInput
+static const int scancodeValues[] = {
+  500,
+  501,
+  502,
+  503,
+  504,
+  505,
+  506,
+  507,
+  508,
+  509,
+  510,
+  511,
+  512,
+  513,
+  // standard scancode values from here
+  SDL_SCANCODE_A,
+  SDL_SCANCODE_LEFT,
+  SDL_SCANCODE_D,
+  SDL_SCANCODE_RIGHT,
+  SDL_SCANCODE_W,
+  SDL_SCANCODE_UP,
+  SDL_SCANCODE_S,
+  SDL_SCANCODE_DOWN,
+  SDL_SCANCODE_RETURN,
+  SDL_QUIT,
+  SDL_KEYDOWN,
+  SDL_KEYUP,
+  SDL_MOUSEBUTTONDOWN,
+  SDL_MOUSEBUTTONUP,
+  SDL_MOUSEMOTION,
+  SDL_CONTROLLERBUTTONDOWN,
+  SDL_CONTROLLERBUTTONUP,
+  SDL_CONTROLLERAXISMOTION,
+  SDL_JOYAXISMOTION,
+  SDL_JOYBUTTONDOWN,
+  SDL_JOYBUTTONUP,
+};
+
+
+void LuaScriptAPI::setScriptGlobals(lua_State* L) {
+  // register constant values of particular keys and buttons as globals in the script context
+  int numCodes = sizeof(scancodeGlobals) / sizeof(const char*);
+  for (int i = 0; i < numCodes; i += 1) {
+    lua_pushnumber(L, scancodeValues[i]);
+    lua_setglobal(L, scancodeGlobals[i]);
+  }
+}
+/**
+ * Returns to the calling Lua script the state of a controller (or keyboard) button/key
+ * @param L a pointer to a lua context
+ * @return the number of results the lua function can expect
+*/
 int LuaScriptAPI::getButtonState(lua_State* L) {
   // TODO: get these Id's from the lua script
-  int controllerId = 0;
-  int buttonId = 0;
-  // std::map<int, bool> dummyButtonState = Engine::instance->inputManager->getButtonState(controllerId, buttonId);
-  std::cout << "getButtonState FROM C++" << std::endl;
-  // TODO: parse to lua stack friendly
-  return 0;
-}
-int LuaScriptAPI::addOne(lua_State* L) {
-  std::cout << "DO SOME ADDING!" << std::endl;
+  // NOTE: -1 means top of stack
+  int controllerId;
+  int buttonId; // also stands for keyId for keyboard input
+  int isDown;
+  // for now controllerId is a consistent 0
+  controllerId = 0;
+  buttonId = lua_tointeger(L, -1); // get argument
+  lua_pop(L, -1);
+  isDown = Engine::instance->inputManager->getButtonState(controllerId, buttonId);
+  // this button state is returned to the calling lua function
+  lua_pushnumber(L, isDown);
   return 1;
+}
+
+int LuaScriptAPI::getStickState(lua_State* L) {
+  std::cout << "getStickState FROM C++" << std::endl;
+  return 2;
+}
+
+int LuaScriptAPI::getPointerDown(lua_State* L) {
+  std::cout << "getPointerDown FROM C++" << std::endl;
+  return 1;
+}
+
+int LuaScriptAPI::getPointerXY(lua_State* L) {
+  std::cout << "getPointerXY FROM C++" << std::endl;
+  return 2;
 }
 
 int LuaScriptAPI::loadScript(const char* filename) {
   // pass the file name of the script
   std::cout << "lua game script name: " << filename << std::endl;
+  luaL_openlibs(this->gameScriptCtx);
+  this->setScriptGlobals(this->gameScriptCtx);
+
   if (luaL_loadfile(this->gameScriptCtx, filename) || lua_pcall(this->gameScriptCtx, 0, 0, 0)) {
     // error(L, "cannot run config. file: %s", lua_tostring(L, -1));
     std::cerr << "ERROR: can't open game script file: " << filename << std::endl;
     return 1;
   }
-  luaL_openlibs(this->gameScriptCtx);
-  
 
   // initial successful attempt at calling lua global functions from C++
   this->callGlobalFunc("update");
@@ -143,9 +251,10 @@ LuaScriptAPI::LuaScriptAPI() {
   // luaL_openlibs(this->gameScriptCtx);
   // library to be registered
   static const struct luaL_Reg api[] = {
-    { "hello", LuaScriptAPI::hello },
     { "getButtonState", LuaScriptAPI::getButtonState },
-    { "addOne", LuaScriptAPI::addOne },
+    { "getStickState", LuaScriptAPI::getStickState},
+    { "getPointerDown", LuaScriptAPI::getPointerDown },
+    { "getPointerXY", LuaScriptAPI::getPointerXY},
     { nullptr, nullptr }
   };
 
