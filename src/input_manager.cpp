@@ -25,6 +25,35 @@ void InputManager::handleWhichControllerButton(int buttonId, int isPressed) {
   this->mControllers[0]->setButtonState(buttonId, isPressed);
 }
 
+void InputManager::handleStickChange(int controllerId, int stickAxis, float axisValue) {
+  if (( axisValue < -3200 ) || (axisValue > 3200 )) {
+    // PS4 left stick: 0 contains axes 0 & 1 (x and y)
+    if ( stickAxis == 0 || stickAxis == 1) {
+      // 0 axis on PS4 stick 0: x-axis
+      if (stickAxis == 0) {
+        this->mControllers[0]->setStickState(0, axisValue, this->mControllers[0]->mStickState[0].second );
+      // 1 axis on PS4 stick 0: y-axis            
+      } else {
+        this->mControllers[0]->setStickState(0, this->mControllers[0]->mStickState[0].first, axisValue );
+      }
+    // PS4 right stick: 1 contains axes 2 & 5 (x and y)
+    } else if (stickAxis == 2 || stickAxis == 5) {
+      // 2 axis on PS4 stick 1: x-axis
+      if (stickAxis == 2) {
+        this->mControllers[0]->setStickState(1, axisValue, this->mControllers[0]->mStickState[0].second );
+      } else {
+        // 5 axis on PS4 stick 1: y-axis            
+        this->mControllers[0]->setStickState(1, this->mControllers[0]->mStickState[0].first, axisValue );
+      }
+    }
+  } else {
+    // std::cout << "stop moving!" << std::endl;
+    this->mControllers[0]->setStickState(0, 0, 0 );
+    this->mControllers[0]->setStickState(1, 0, 0 );
+  }
+}
+
+
 void InputManager::handleWhichKey(SDL_Keysym *keySym, int isDown ) {
   /* 
     For now, assumes only one controller at index 0
@@ -116,8 +145,6 @@ void InputManager::handleInput(int& isLooping) {
         break;
       }
       case SDL_CONTROLLERBUTTONDOWN: {
-        // which controller button
-        // event.button
         break;
       }
       case SDL_CONTROLLERBUTTONUP: {
@@ -128,9 +155,13 @@ void InputManager::handleInput(int& isLooping) {
       }
       // applies to joy stick events
       case SDL_JOYAXISMOTION: {
-        // TODO: implement reducing sensitivity of control stick
+        // TODO: implement reducing sensitivity of control stick, and recognize stick "release"
         // TODO: figure out why L. Trigger and R. Trigger "halfway presses" triggers this event
-        // std::cout << "moved the stick!" << std::endl;
+        int stickAxis = static_cast<int>(event.jaxis.axis);
+        int controllerId = 0;
+        // PS4 controllers seem to have axes of 0 and 1 for stick 0 and axes 2 and 5 for stick 1
+        float axisValue = static_cast<float>(event.jaxis.value);
+        this->handleStickChange(controllerId, stickAxis, axisValue);
         break;
       }
       case SDL_JOYBUTTONDOWN: {
@@ -168,7 +199,6 @@ void VirtualController::setButtonState(int buttonId, int isPressed ) {
 
 int InputManager::getButtonState(int controllerId, int buttonId) {
   // TODO: add exception handling here in case controllerIds or buttonIds don't exist
-  std::cout << "calling getButtonState! buttonId:" << buttonId << std::endl;
   return this->mControllers[controllerId]->mButtonState[buttonId];
 }
 

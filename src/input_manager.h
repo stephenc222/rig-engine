@@ -28,6 +28,7 @@ class InputManager {
     void handleInput(int &isLooping);
     void handleWhichKey(SDL_Keysym *keySym, int isDown );
     void handleWhichControllerButton(int buttonId, int isPressed );
+    void handleStickChange(int controllerId, int stickAxis, float axisValue);
     int getButtonState(int controllerId, int buttonId);
     std::pair<float, float> getStickState(int controllerId, int stickId);
     int getPointerDown();
