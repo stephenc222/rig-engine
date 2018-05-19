@@ -1,6 +1,7 @@
 #include "lua_script.h"
 #include <iostream>
 #include <stdexcept>
+#include <map>
 #include "engine.h"
 
 // NOTE: PS4 constants are hardcoded and possibly non-standard for SDL
@@ -115,7 +116,23 @@ int LuaScriptAPI::getButtonState(lua_State* L) {
 }
 
 int LuaScriptAPI::getStickState(lua_State* L) {
-  std::cout << "getStickState FROM C++" << std::endl;
+  // std::cout << "getStickState FROM C++" << std::endl;
+  int controllerId;
+  int stickId;
+  float horizontal;
+  float vertical;
+
+  // for now controllerId is a consistent 0
+  controllerId = 0;
+  stickId = lua_tointeger(L, -1);
+  lua_pop(L, -1);
+  std::pair<float, float> stickState = Engine::instance->inputManager->getStickState(controllerId, stickId);
+  horizontal = stickState.first;
+  vertical = stickState.second;
+  // push horizontal and vertical values on the stack
+  lua_pushnumber(L, horizontal);
+  lua_pushnumber(L, vertical);
+  
   return 2;
 }
 

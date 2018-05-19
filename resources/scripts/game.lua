@@ -7,7 +7,11 @@ function update ()
   -- update stuff
   -- TODO: WIP testing out getting button state
   isDown = api:getButtonState(SDL_SCANCODE_A)
+
+  -- TODO: WIP testing out getting stick state
+  stick_0_x, stick_0_y = api:getStickState(0)
   -- print("isDown:", isDown)
+  -- print("stick_0_x", stick_0_x, "stick_0_y", stick_0_y)
   if isDown == 1 then
     print('it is down!') 
   end
