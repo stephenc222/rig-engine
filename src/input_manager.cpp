@@ -25,6 +25,7 @@ void InputManager::handleWhichControllerButton(int buttonId, int isPressed) {
   this->mControllers[0]->setButtonState(buttonId, isPressed);
 }
 
+// FIXME: this creates "+" deadzones on controller stick movement
 void InputManager::handleStickChange(int controllerId, int stickAxis, float axisValue) {
   if (( axisValue < -3200 ) || (axisValue > 3200 )) {
     // PS4 left stick: 0 contains axes 0 & 1 (x and y)
@@ -225,9 +226,7 @@ int InputManager::getPointerDown() {
 }
 
 void VirtualPointer::setPointerDown(int isDown) {
-  // std::cout << "set pointer down called!" << std::endl;
   this->pointerDown = isDown;
-  // std::cout << "VALUE: " << this->pointerDown << std::endl;
 }
 
 InputManager::InputManager() {

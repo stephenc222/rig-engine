@@ -137,12 +137,26 @@ int LuaScriptAPI::getStickState(lua_State* L) {
 }
 
 int LuaScriptAPI::getPointerDown(lua_State* L) {
-  std::cout << "getPointerDown FROM C++" << std::endl;
+    // no arguments expected since only one mouse pointer is expected
+  // std::cout << "getPointerDown FROM C++" << std::endl;
+  int isDown;
+  isDown = Engine::instance->inputManager->getPointerDown();
+  lua_pushnumber(L, isDown);
   return 1;
 }
 
 int LuaScriptAPI::getPointerXY(lua_State* L) {
-  std::cout << "getPointerXY FROM C++" << std::endl;
+  // std::cout << "getPointerXY FROM C++" << std::endl;
+  std::pair<float, float> pointerXY;
+  float pointerX;
+  float pointerY;
+
+  pointerXY = Engine::instance->inputManager->getPointerXY();
+  // no arguments expected since only one mouse pointer is expected
+  pointerX = pointerXY.first;
+  pointerY = pointerXY.second;
+  lua_pushnumber(L, pointerX);
+  lua_pushnumber(L, pointerY);
   return 2;
 }
 
