@@ -133,7 +133,7 @@ void InputManager::handleInput(int& isLooping) {
       }
       case SDL_MOUSEBUTTONDOWN: {
         int isDown = 1;       
-        this->virtualPointer.setPointerDown(isDown);                 
+        this->virtualPointer.setPointerDown(isDown); 
         break;
       }
       case SDL_MOUSEBUTTONUP: {
@@ -216,6 +216,10 @@ std::pair<float, float> InputManager::getPointerXY() {
   return this->virtualPointer.pointerXY;
 }
 
+DebugData InputManager::getDebugData() {
+  return this->debugData;
+};
+
 void VirtualPointer::setPointerXY(float x, float y) {
   this->pointerXY.first = x;
   this->pointerXY.second = y;
@@ -232,6 +236,9 @@ void VirtualPointer::setPointerDown(int isDown) {
 InputManager::InputManager() {
   // TODO: assumes only 1 controller so 1 player for now
   this->mControllers[0] = new VirtualController;
+  this->debugData.vPointerPtr = &this->virtualPointer;
+  this->debugData.mControllersPtr = &this->mControllers;
+  // also assumes only one mouse pointer for now
 }
 
 InputManager::~InputManager() {

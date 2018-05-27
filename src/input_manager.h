@@ -20,11 +20,19 @@ struct VirtualPointer {
   int pointerDown;
 };
 
+// contains pointers to both VirtualPointer and VirtualController, for consolidated
+// data passing to the Renderer for display on the debug display
+struct DebugData {
+  VirtualPointer* vPointerPtr;
+  std::map<int, VirtualController*>* mControllersPtr;
+};
+
 // TODO: abstract later
 class InputManager {
   public:
     std::map<int, VirtualController*> mControllers;
     VirtualPointer virtualPointer;
+    DebugData debugData;
     void handleInput(int &isLooping);
     void handleWhichKey(SDL_Keysym *keySym, int isDown );
     void handleWhichControllerButton(int buttonId, int isPressed );
@@ -33,6 +41,9 @@ class InputManager {
     std::pair<float, float> getStickState(int controllerId, int stickId);
     int getPointerDown();
     std::pair<float, float> getPointerXY();
+    // for now, get all input device data
+    DebugData getDebugData();
+
     InputManager();
     ~InputManager();
 };
