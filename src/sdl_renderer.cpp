@@ -1,4 +1,5 @@
 #include "./sdl_renderer.h"
+#include "engine.h"
 
 const char* DEBUG_FONT = "./fonts/OpenSans-Regular.ttf";
 
@@ -21,7 +22,8 @@ TTF_Font* SDLRenderer::loadFont(const char *fileName, int fontSize) {
   return font;
 }
 
-void SDLRenderer::renderDebugWindowTextLine(const char* debugText) {
+// TODO: add caching to reduce number of create operations
+void SDLRenderer::renderDebugWindowTextLine(const char* debugText, int xOffset, int yOffset) {
   SDL_Color White = {255, 255, 255};  // this is the color in rgb format, maxing out all would give you the color white, and it will be your text's color
 
   SDL_Surface* surfaceMessage = TTF_RenderText_Solid(this->debugFont, debugText, White); // as TTF_RenderText_Solid could only be used on SDL_Surface then you have to create the surface first
@@ -31,8 +33,8 @@ void SDLRenderer::renderDebugWindowTextLine(const char* debugText) {
 
 
   SDL_Rect Message_rect; //create a rect
-  Message_rect.x = this->debugWindowRect.x;  //controls the rect's x coordinate 
-  Message_rect.y = this->debugWindowRect.y; // controls the rect's y coordinte
+  Message_rect.x = this->debugWindowRect.x + xOffset;  //controls the rect's x coordinate 
+  Message_rect.y = this->debugWindowRect.y + yOffset; // controls the rect's y coordinte
   Message_rect.w = 150; // controls the width of the rect
   Message_rect.h = 25; // controls the height of the rect
 
@@ -44,6 +46,17 @@ void SDLRenderer::renderDebugWindowTextLine(const char* debugText) {
   SDL_DestroyTexture(Message);
 }
 
+void SDLRenderer::renderDebugVirtualPointerData(VirtualPointer& virtualPointer) {
+  // TODO: use SDLRenderer::renderDebugWindowTextLine to visually breakdown VirtualPointer
+  this->renderDebugWindowTextLine("Dummy Virtual Pointer Data", 5, 5);
+  
+}
+
+void SDLRenderer::renderDebugVirtualControllersData(std::map<int, VirtualController*>& mControllers) {
+  // TODO: use SDLRenderer::renderDebugWindowTextLine to visually breakdown mControllers
+  this->renderDebugWindowTextLine("Dummy Virtual Controllers Data", 5, 25);  
+}
+
 void SDLRenderer::renderDebugWindow() {
   // draw debug window
   
@@ -51,7 +64,8 @@ void SDLRenderer::renderDebugWindow() {
   SDL_SetRenderDrawColor(this->sdlRendererPtr, 0, 0, 0, 255);
   SDL_RenderFillRect(this->sdlRendererPtr, &this->debugWindowRect);
   // next draw text
-  this->renderDebugWindowTextLine("Dummy Debug Text");
+  this->renderDebugVirtualPointerData(Engine::instance->inputManager->virtualPointer);
+  this->renderDebugVirtualControllersData(Engine::instance->inputManager->mControllers);
 
   SDL_SetRenderDrawColor(this->sdlRendererPtr, 178, 232, 255, 255);
 }
@@ -78,7 +92,7 @@ int SDLRenderer::init(int SCREEN_WIDTH, int SCREEN_HEIGHT) {
   this->debugWindowRect.w = 180;
   this->debugWindowRect.h = 150;
 
-  this->debugFont = this->loadFont(DEBUG_FONT, 16);
+  this->debugFont = this->loadFont(DEBUG_FONT, 26);
   // TODO: maybe FIXME: for now, if no joystick (PS4 typically) is connected, assume just keyboard
   // maybe add a preprocessor directive here
   // Check for joysticks
@@ -86,13 +100,11 @@ int SDLRenderer::init(int SCREEN_WIDTH, int SCREEN_HEIGHT) {
     printf( "Warning: No joysticks connected!\n" );
     this->sdlJoystick = nullptr;
   }
-  else
-  {
+  else {
     //Load joystick
     SDL_JoystickEventState(SDL_ENABLE);
     this->sdlJoystick = SDL_JoystickOpen(0);
-    if( this->sdlJoystick == NULL )
-    {
+    if( this->sdlJoystick == NULL ) {
       printf( "Warning: Unable to open game controller! SDL Error: %s\n", SDL_GetError() );
       return 1;
     }
