@@ -1,5 +1,6 @@
 #include "./sdl_renderer.h"
 #include "engine.h"
+#include <sstream>
 
 const char* DEBUG_FONT = "./fonts/OpenSans-Regular.ttf";
 
@@ -47,14 +48,24 @@ void SDLRenderer::renderDebugWindowTextLine(const char* debugText, int xOffset, 
 }
 
 void SDLRenderer::renderDebugVirtualPointerData(VirtualPointer& virtualPointer) {
-  // TODO: use SDLRenderer::renderDebugWindowTextLine to visually breakdown VirtualPointer
-  this->renderDebugWindowTextLine("Dummy Virtual Pointer Data", 5, 5);
-  
+
+  std::stringstream msg;
+  msg << "PointerX: " << static_cast<int>(virtualPointer.pointerXY.first);
+  this->renderDebugWindowTextLine(msg.str().c_str(), 5, 20);
+  msg.str("");
+  msg << "PointerY: " << static_cast<int>(virtualPointer.pointerXY.second);
+  this->renderDebugWindowTextLine(msg.str().c_str(), 5, 40);
+  msg.str("");
+
+  msg << "PointerDown: " << static_cast<int>(virtualPointer.pointerDown);
+  this->renderDebugWindowTextLine(msg.str().c_str(), 5, 60);
+  msg.str("");
+
 }
 
 void SDLRenderer::renderDebugVirtualControllersData(std::map<int, VirtualController*>& mControllers) {
   // TODO: use SDLRenderer::renderDebugWindowTextLine to visually breakdown mControllers
-  this->renderDebugWindowTextLine("Dummy Virtual Controllers Data", 5, 25);  
+  // this->renderDebugWindowTextLine("Dummy Virtual Controllers Data", 5, 25);  
 }
 
 void SDLRenderer::renderDebugWindow() {
@@ -87,6 +98,7 @@ int SDLRenderer::init(int SCREEN_WIDTH, int SCREEN_HEIGHT) {
     printf("TTF_Init: %s\n", TTF_GetError());
     return 1;
   }
+  
   this->debugWindowRect.x = 20;
   this->debugWindowRect.y = 20;
   this->debugWindowRect.w = 180;
