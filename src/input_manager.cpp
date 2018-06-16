@@ -104,6 +104,10 @@ void InputManager::handleWhichKey(SDL_Keysym *keySym, int isDown ) {
       this->mControllers[0]->setButtonState(SDL_SCANCODE_DOWN, isDown);
       break;
     }
+    case SDL_SCANCODE_SPACE: {
+      this->mControllers[0]->setButtonState(SDL_SCANCODE_SPACE, isDown);
+      break;
+    }
     case SDL_SCANCODE_RETURN: {
       this->mControllers[0]->setButtonState(SDL_SCANCODE_RETURN, isDown);
       break;

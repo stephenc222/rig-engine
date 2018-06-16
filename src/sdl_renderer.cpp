@@ -4,6 +4,24 @@
 
 const char* DEBUG_FONT = "./fonts/OpenSans-Regular.ttf";
 
+// TODO:: abstract later
+const int directionalKeys[10] = {
+  // left
+  SDL_SCANCODE_A,
+  SDL_SCANCODE_LEFT,
+  // right
+  SDL_SCANCODE_D,
+  SDL_SCANCODE_RIGHT,
+  // up
+  SDL_SCANCODE_W,
+  SDL_SCANCODE_UP,
+  // down
+  SDL_SCANCODE_S,
+  SDL_SCANCODE_DOWN,
+  // space
+  SDL_SCANCODE_SPACE
+};
+
 void SDLRenderer::render() {
   // render stuff
   SDL_RenderClear(this->sdlRendererPtr);
@@ -60,12 +78,26 @@ void SDLRenderer::renderDebugVirtualPointerData(VirtualPointer& virtualPointer) 
   msg << "PointerDown: " << static_cast<int>(virtualPointer.pointerDown);
   this->renderDebugWindowTextLine(msg.str().c_str(), 5, 60);
   msg.str("");
-
 }
 
 void SDLRenderer::renderDebugVirtualControllersData(std::map<int, VirtualController*>& mControllers) {
   // TODO: use SDLRenderer::renderDebugWindowTextLine to visually breakdown mControllers
   // this->renderDebugWindowTextLine("Dummy Virtual Controllers Data", 5, 25);  
+  std::stringstream msg;
+  // TODO: assumes one controller for now (keyboard)
+  int pressedKey = 0;
+  for (int i = 0; i < sizeof(directionalKeys) /sizeof(directionalKeys[0]); ++i) {
+    if(mControllers[0]->mButtonState[directionalKeys[i]]) {
+      pressedKey = directionalKeys[i];
+    }
+  }
+
+  if (!pressedKey) {
+    pressedKey = 0;
+  }
+  msg << "KeyDown: " << pressedKey;
+  this->renderDebugWindowTextLine(msg.str().c_str(), 5, 80);
+  msg.str("");
 }
 
 void SDLRenderer::renderDebugWindow() {
