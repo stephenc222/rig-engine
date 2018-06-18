@@ -17,10 +17,12 @@ class SDLRenderer: public Renderer {
     void render();
     double getTime();
     int init(int SCREEN_WIDTH, int SCREEN_HEIGHT);
+    #ifdef DEBUG
     void renderDebugWindowTextLine(const char* debugText, int xOffset, int yOffset);
     void renderDebugVirtualPointerData(VirtualPointer& virtualPointer);
     void renderDebugVirtualControllersData(std::map<int, VirtualController*>& mControllers);
     void renderDebugWindow();
+    #endif
     void cleanUp();
     TTF_Font* loadFont(const char *fileName, int fontSize);
     ~SDLRenderer();

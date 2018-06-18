@@ -13,7 +13,7 @@ function update ()
   -- print("isDown:", isDown)
   -- print("stick_0_x", stick_0_x, "stick_0_y", stick_0_y)
   if isDown == 1 then
-    print('it is down!') 
+    -- print('it is down!') 
   end
   return "update Func From Lua!"
 end

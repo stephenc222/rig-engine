@@ -1,6 +1,8 @@
 #include "./input_manager.h"
 #include <iostream>
 
+
+
 // TODO: later - an optimization could occur for removing the possibility of certain event types based
 // on platform the engine is built for
 void InputManager::handleWhichControllerButton(int buttonId, int isPressed) {
@@ -220,9 +222,11 @@ std::pair<float, float> InputManager::getPointerXY() {
   return this->virtualPointer.pointerXY;
 }
 
+#ifdef DEBUG
 DebugData InputManager::getDebugData() {
   return this->debugData;
 };
+#endif
 
 void VirtualPointer::setPointerXY(float x, float y) {
   this->pointerXY.first = x;
@@ -240,8 +244,10 @@ void VirtualPointer::setPointerDown(int isDown) {
 InputManager::InputManager() {
   // TODO: assumes only 1 controller so 1 player for now
   this->mControllers[0] = new VirtualController;
+  #ifdef DEBUG
   this->debugData.vPointerPtr = &this->virtualPointer;
   this->debugData.mControllersPtr = &this->mControllers;
+  #endif
   // also assumes only one mouse pointer for now
 }
 

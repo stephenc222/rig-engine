@@ -27,9 +27,9 @@ void SDLRenderer::render() {
   SDL_RenderClear(this->sdlRendererPtr);
 
   // this->renderSceneGraph(renderer,game);
-  // TODO: for now, just draw the debug window, ultimately (maybe?) wrapping this probably in
-  // preprocessor directives
+  #ifdef DEBUG
   this->renderDebugWindow();
+  #endif
 
   SDL_RenderPresent(this->sdlRendererPtr);
 }
@@ -41,6 +41,7 @@ TTF_Font* SDLRenderer::loadFont(const char *fileName, int fontSize) {
   return font;
 }
 
+#ifdef DEBUG
 // TODO: add caching to reduce number of create operations
 void SDLRenderer::renderDebugWindowTextLine(const char* debugText, int xOffset, int yOffset) {
   SDL_Color White = {255, 255, 255};  // this is the color in rgb format, maxing out all would give you the color white, and it will be your text's color
@@ -64,7 +65,6 @@ void SDLRenderer::renderDebugWindowTextLine(const char* debugText, int xOffset, 
   SDL_RenderCopy(this->sdlRendererPtr, Message, NULL, &Message_rect); //you put the renderer's name first, the Message, the crop size(you can ignore this if you don't want to dabble with cropping), and the rect which is the size and coordinate of your texture
   SDL_DestroyTexture(Message);
 }
-
 void SDLRenderer::renderDebugVirtualPointerData(VirtualPointer& virtualPointer) {
 
   std::stringstream msg;
@@ -112,6 +112,8 @@ void SDLRenderer::renderDebugWindow() {
 
   SDL_SetRenderDrawColor(this->sdlRendererPtr, 178, 232, 255, 255);
 }
+#endif
+
 
 double SDLRenderer::getTime() {
   return SDL_GetTicks();
@@ -130,13 +132,14 @@ int SDLRenderer::init(int SCREEN_WIDTH, int SCREEN_HEIGHT) {
     printf("TTF_Init: %s\n", TTF_GetError());
     return 1;
   }
-  
+  #ifdef DEBUG
   this->debugWindowRect.x = 20;
   this->debugWindowRect.y = 20;
   this->debugWindowRect.w = 180;
   this->debugWindowRect.h = 150;
 
   this->debugFont = this->loadFont(DEBUG_FONT, 26);
+  #endif
   // TODO: maybe FIXME: for now, if no joystick (PS4 typically) is connected, assume just keyboard
   // maybe add a preprocessor directive here
   // Check for joysticks
